@@ -40,6 +40,7 @@ function getMap(game:AntGame) {
 
     map += i+')  ';
       
+    //places an ant icon at its location.
     for(let j=0; j<places[i].length; j++){ 
       let place:Place = places[i][j];
 

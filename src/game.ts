@@ -1,5 +1,7 @@
 import {Insect, Bee, Ant, GrowerAnt, ThrowerAnt, EaterAnt, ScubaAnt, GuardAnt} from './ants';
 
+//This class establishes the physical entities that are 
+//in the game; the ants, guards, and bees.
 class Place {
   protected ant:Ant;
   protected guard:GuardAnt;
@@ -29,6 +31,7 @@ class Place {
 
   getBees():Bee[] { return this.bees; }
 
+  
   getClosestBee(maxDistance:number, minDistance:number = 0):Bee {
 		let p:Place = this;
 		for(let dist = 0; p!==undefined && dist <= maxDistance; dist++) {
@@ -40,6 +43,7 @@ class Place {
 		return undefined;
   }
 
+  //Adds an ant, unless user wants a guard ant.
   addAnt(ant:Ant):boolean {
     if(ant instanceof GuardAnt) {
       if(this.guard === undefined){
@@ -57,6 +61,7 @@ class Place {
     return false;
   }
 
+  //removes an ant, or a guard ant depending on user input.
   removeAnt():Ant {
     if(this.guard !== undefined){
       let guard = this.guard;
@@ -93,6 +98,7 @@ class Place {
     this.exit.addBee(bee);  
   }
 
+  //Removes either ant or bee depending on input
   removeInsect(insect:Insect) {
     if(insect instanceof Ant){
       this.removeAnt();
@@ -102,6 +108,7 @@ class Place {
     }
   }
 
+  //Guard ants cant function in water, however scuba ants can
   act() {
     if(this.water){
       if(this.guard){
@@ -114,16 +121,18 @@ class Place {
   }
 }
 
-
+//This class is responsible for the waves and attaacking the colony.
 class Hive extends Place {
   private waves:{[index:number]:Bee[]} = {}
 
   constructor(private beeArmor:number, private beeDamage:number){
     super('Hive');
   }
-
+  //This method is responsible for adding a wave
   addWave(attackTurn:number, numBees:number):Hive {
     let wave:Bee[] = [];
+
+    //This loop adds a bee to the wave
     for(let i=0; i<numBees; i++) {
       let bee = new Bee(this.beeArmor, this.beeDamage, this);
       this.addBee(bee);
@@ -133,6 +142,7 @@ class Hive extends Place {
     return this;
   }
   
+  //Puts a bee in a random entrance location for the attack
   invade(colony:AntColony, currentTurn:number): Bee[]{
     if(this.waves[currentTurn] !== undefined) {
       this.waves[currentTurn].forEach((bee) => {
@@ -149,7 +159,7 @@ class Hive extends Place {
   }
 }
 
-
+ 
 class AntColony {
   private food:number;
   private places:Place[][] = [];
@@ -204,6 +214,7 @@ class AntColony {
     console.log('Found a '+boost+'!');
   }
 
+  //deploys an Ant at the location chosen, returns an error if not possible
   deployAnt(ant:Ant, place:Place):string {
     if(this.food >= ant.getFoodCost()){
       let success = place.addAnt(ant);
@@ -220,6 +231,7 @@ class AntColony {
     place.removeAnt();
   }
 
+  //allows the user to select a boost and place it on an ant at a location
   applyBoost(boost:string, place:Place):string {
     if(this.boosts[boost] === undefined || this.boosts[boost] < 1) {
       return 'no such boost';
@@ -297,6 +309,9 @@ class AntGame {
 
   getTurn() { return this.turn; }
 
+  //if the bees made it to the queen, game is lost.
+  //if the number of total bees in the colony and in the hive is 0,
+  //game is won.
   gameIsWon():boolean|undefined {
     if(this.colony.queenHasBees()){
       return false;
@@ -307,6 +322,7 @@ class AntGame {
     return undefined;
   }
 
+  //The user can place an ant of their choosing at a specific coordinate
   deployAnt(antType:string, placeCoordinates:string):string {
     let ant;
     switch(antType.toLowerCase()) {
@@ -333,6 +349,8 @@ class AntGame {
     }
   }
 
+  //Removes an ant at a specific coordinate, 
+  //does not matter what type of ant.
   removeAnt(placeCoordinates:string):string {
     try {
       let coords = placeCoordinates.split(',');
@@ -344,6 +362,8 @@ class AntGame {
     }    
   }
 
+  //User input what boost they want to give to an ant
+  //at a specific coordinate
   boostAnt(boostType:string, placeCoordinates:string):string {
     try {
       let coords = placeCoordinates.split(',');
