@@ -1,5 +1,6 @@
 import {AntColony, Place} from './game';
 
+//This class is in charge ofthe general state of an Ant
 export abstract class Insect {
   readonly name:string;
 
@@ -10,6 +11,7 @@ export abstract class Insect {
   getPlace() { return this.place; }
   setPlace(place:Place){ this.place = place; }
 
+  //When armor is gone, it removes the ant
   reduceArmor(amount:number):boolean {
     this.armor -= amount;
     if(this.armor <= 0){
